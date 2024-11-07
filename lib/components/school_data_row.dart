@@ -3,7 +3,7 @@ import 'package:p01_final_project/models/school_data.dart';
 
 class SchoolDataRow extends StatelessWidget {
   final SchoolData school;
-	final TextStyle textStyle = const TextStyle(fontSize: 12.0);
+	final TextStyle textStyle = const TextStyle(fontSize: 16.0);
 	
   const SchoolDataRow({
 		super.key,
@@ -17,7 +17,7 @@ class SchoolDataRow extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            flex: 4,
+            flex: 9,
             child: Text(
               school.schoolName,
               style: textStyle,
@@ -26,12 +26,12 @@ class SchoolDataRow extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Text(
-              school.schoolName,
+              school.schoolStateInitials,
               style: textStyle,
             ),
           ),
           Expanded(
-            flex: 7,
+            flex: 3,
             child: Text(
               '${school.studentPopulation}',
               textAlign: TextAlign.end,

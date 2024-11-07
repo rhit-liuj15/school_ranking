@@ -1,26 +1,33 @@
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class StateNamesData {
 	// I'm trying my best to guess this is how singleton works in flutter...
-	Map<String,String> stateNames = Map<String,String>();
+	late Map<String,String> stateNames;
+	bool stateNamesReady = false;
   static final StateNamesData instance = StateNamesData._privateConstructor();
 
-  StateNamesData._privateConstructor() {
-		var url = Uri.http('10.0.0.48:4800', 'states');
-		// var url = Uri.http('ethan02.us:4800', 'states');
-		()async{
+
+  StateNamesData._privateConstructor();
+
+  // Method to load data asynchronously and populate stateNames
+  Future<void> loadData() async {
+		if (!stateNamesReady) {
+			var url = Uri.http('ethan02.us:4800', 'schools');
 			try {
 				final response = await http.get(url);
-				// Flutter enforces CORS. The needed change is performed server-side.
 				if (response.statusCode == 200) {
-					print('Response data: ${response.body}');
+					List<dynamic> data = jsonDecode(response.body);
+					stateNames = <String,String>{};
+					data.map((item) => stateNames[item['Codevalue'] as String] = item['valueLabel'] as String);
+					stateNamesReady = true;
 				} else {
 					print('Failed to load data. HTTP Status Code: ${response.statusCode}');
 				}
 			} catch (e) {
 				print('Error occurred: $e');
 			}
-		}();
-	}
+		}
+  }
 }
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:p01_final_project/components/filter_component.dart';
 import 'package:p01_final_project/components/sortable_school_table.dart';
 import 'package:p01_final_project/models/all_school_data.dart';
 import 'package:p01_final_project/models/school_data.dart';
@@ -31,14 +30,9 @@ class _AllSchoolsPageState extends State<AllSchoolsPage> {
       body: const Center(
 				child: Padding(
 					padding: EdgeInsets.all(40.0),
-					child: Row(
-					  children: [
-					    FilterComponent(),
-					    Placeholder(),
-					    Expanded(child: SortableSchoolTable()),
-					  ],
-					),
-      )),
+					child: SortableSchoolTable(),
+        )
+      ),
     );
   }
 }
