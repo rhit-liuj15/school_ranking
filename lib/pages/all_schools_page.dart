@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:p01_final_project/components/sortable_table.dart';
+import 'package:p01_final_project/components/sortable_school_table.dart';
 import 'package:p01_final_project/models/all_school_data.dart';
 import 'package:p01_final_project/models/school_data.dart';
 
@@ -30,41 +30,6 @@ class _AllSchoolsPageState extends State<AllSchoolsPage> {
       ),
       body: Center(
 				child: SortableSchoolTable(),
-				// DataTable(
-				//           columns: const [
-				//             DataColumn(label: Text('Name')),
-				//             DataColumn(label: Text('State')),
-				//             DataColumn(label: Text('Student Population')),
-				//             DataColumn(label: Text('Add to Compare')),
-				//           ],
-				//           rows: List<DataRow>.generate(
-				// 		allSchools.length,
-				// 		(int index) =>  DataRow(
-				// 			color: WidgetStatePropertyAll(index.isEven? Colors.grey.shade300 : Colors.grey.shade50),
-				// 			cells: [
-				// 				DataCell(Text(allSchools[index].schoolName)),
-				// 				DataCell(Text(allSchools[index].schoolStateInitials)),
-				// 				DataCell(Text(allSchools[index].studentPopulation.toString())),
-				// 				DataCell(
-				// 					TextButton(
-				// 						child: Text(selected[index]?"-":"+"),
-				// 						onPressed: () {
-				// 							setState(() {
-				// 							  selected[index] = !selected[index];
-				// 							});
-				// 						},
-				// 					)
-				// 				),
-				//             	],
-				// 			selected: selected[index],
-				// 			onSelectChanged: (bool? value) {
-				// 				setState(() {
-				// 					selected[index] = value!;
-				// 				});
-				// 			},
-				// 		),
-				//           )
-				// ),
 			),
     );
   }

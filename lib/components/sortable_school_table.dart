@@ -1,10 +1,12 @@
 
 import 'package:flutter/material.dart';
-import 'package:p01_final_project/components/school_data_tile.dart';
+import 'package:p01_final_project/components/school_data_row.dart';
 import 'package:p01_final_project/models/all_school_data.dart';
 import 'package:p01_final_project/models/school_data.dart';
 
 class SortableSchoolTable extends StatefulWidget {
+  const SortableSchoolTable({super.key});
+
   @override
   _SortableSchoolTableState createState() => _SortableSchoolTableState();
 }
@@ -76,7 +78,7 @@ class _SortableSchoolTableState extends State<SortableSchoolTable> {
 						child: ListView.builder(
 							itemCount: schoolList.length,
 							itemBuilder: (context, index) {
-								return SchoolDataTile(school: schoolList[index]);
+								return Visibility(visible: true, child: SchoolDataRow(school: schoolList[index]));
 							},
 						),
 					),
