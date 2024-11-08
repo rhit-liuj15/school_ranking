@@ -15,20 +15,28 @@ class SortableSchoolTable extends StatefulWidget {
 
 class _SortableSchoolTableState extends State<SortableSchoolTable> {
   List<SchoolData> schoolList = <SchoolData>[];
-  List<String> get stateNames {
+	List<SchoolData> schoolsFilteredFor = <SchoolData>[];
+	List<SchoolData> get _schoolsFilteredFor {
+		return schoolList.where((data) => statesFilteredFor.contains(data.schoolStateInitials)).toList();
+	}
+  List<String> stateNames = <String>[];
+  List<String> get _stateNames {
 		return stateNameToAbbreviations.keys.toList();
 	}
-  List<String> get stateAbbreviations {
+	
+  List<String> stateAbbreviations = <String>[];
+  List<String> get _stateAbbreviations {
 		return stateNameToAbbreviations.values.toList();
 	}
 	List<String> filteringStates = <String>[];
   Map<String,String> stateNameToAbbreviations = <String,String>{};
-	int sortingBy = 0; // Sorting by name: 0, state: 1, student population: 2
+	int sortingBy = -1; // Sorting by name: 0, state: 1, student population: 2
 	bool sortAscending = true;
 
 	Map<String,FilterPageStateNameTile> stateNameTiles = <String,FilterPageStateNameTile>{};
 	Map<String,bool> stateIsFilteredFor = <String,bool>{};
-	List<String> get statesFilteredFor {
+	List<String> statesFilteredFor = <String>[];
+	List<String> get _statesFilteredFor {
 		return stateIsFilteredFor.entries.where((entry) => entry.value == true).map((entry) => entry.key).toList();
 	}
 
@@ -48,10 +56,16 @@ class _SortableSchoolTableState extends State<SortableSchoolTable> {
       schoolList = AllSchoolData.instance.allSchools;
       stateNameToAbbreviations = StateNamesData.instance.stateNameToAbbreviations;
     });
+    stateNames = _stateNames;
+    stateAbbreviations = _stateAbbreviations;
+    statesFilteredFor = _statesFilteredFor;
+    schoolsFilteredFor = statesFilteredFor.isEmpty ? schoolList : _schoolsFilteredFor;
+    sortDataByExistingMethod();
 		populateStateNameTiles();
   }
 
-	// The state name tiles are created here. 
+	// The state name tiles are created here.
+	// For each state or territory, their tag is created and associated with the search word in the text 
 	void populateStateNameTiles() {
 		for (String name in stateNames) {
 			String abbr = stateNameToAbbreviations[name]!;
@@ -60,10 +74,13 @@ class _SortableSchoolTableState extends State<SortableSchoolTable> {
 				state: name,
 				removeStateCallback: () {
 					if (stateIsFilteredFor.containsKey(abbr)) {
-						print("The abbreviation '$abbr' does exist");
-						print("The state should currently ${stateIsFilteredFor[abbr]!?"not ":""}be hidden");
+						// print("The abbreviation '$abbr' does exist");
+						// print("The state should currently ${stateIsFilteredFor[abbr]!?"not ":""}be hidden");
 						setState(() {
 							stateIsFilteredFor[abbr] = false;
+              statesFilteredFor = _statesFilteredFor;
+              schoolsFilteredFor = statesFilteredFor.isEmpty ? schoolList : _schoolsFilteredFor;
+              sortDataByExistingMethod();
 						});
 					} else {
 						print("The abbreviation '$abbr' does not exist");
@@ -106,7 +123,7 @@ class _SortableSchoolTableState extends State<SortableSchoolTable> {
 				default:
 					throw("The attribute '$attribute' is not supported by the SortableSchoolTable");
 			}
-      schoolList.sort((a, b) {
+      schoolsFilteredFor.sort((a, b) {
         int compareResult;
         switch (attribute) {
           case 'name':
@@ -123,6 +140,34 @@ class _SortableSchoolTableState extends State<SortableSchoolTable> {
             break;
           default:
             throw("The attribute '$attribute' is not supported by the SortableSchoolTable");
+        }
+				if (compareResult == 0) {
+					return a.uid.compareTo(b.uid); // Backup sort, UID is guaranteed unique
+				}
+        return sortAscending ? compareResult : -compareResult;
+      });
+    });
+  }
+
+  void sortDataByExistingMethod() {
+    setState(() {
+      schoolsFilteredFor.sort((a, b) {
+        int compareResult;
+        switch (sortingBy) {
+          case 0:
+            compareResult = a.schoolName.compareTo(b.schoolName);
+            break;
+          case 1:
+            compareResult = a.schoolStateInitials.compareTo(b.schoolStateInitials);
+            break;
+          case 2:
+            compareResult = a.studentPopulation.compareTo(b.studentPopulation);
+            break;
+          case -1:
+            compareResult = a.uid.compareTo(b.uid);
+            break;
+          default:
+            throw("Sort column index $sortingBy is not supported");
         }
 				if (compareResult == 0) {
 					return a.uid.compareTo(b.uid); // Backup sort, UID is guaranteed unique
@@ -154,6 +199,9 @@ class _SortableSchoolTableState extends State<SortableSchoolTable> {
 									onSelected: (String selection) {
 										setState(() {
 										  stateIsFilteredFor[stateNameToAbbreviations[selection]!] = true;
+										  statesFilteredFor = _statesFilteredFor;
+                      schoolsFilteredFor = statesFilteredFor.isEmpty ? schoolList : _schoolsFilteredFor;
+                      sortDataByExistingMethod();
 										});
 									},
 								),
@@ -202,12 +250,9 @@ class _SortableSchoolTableState extends State<SortableSchoolTable> {
 							),
 							Expanded(
 								child: ListView.builder(
-									itemCount: schoolList.length,
+									itemCount: schoolsFilteredFor.length,
 									itemBuilder: (context, index) {
-										return Visibility(
-											visible: statesFilteredFor.contains(schoolList[index].schoolStateInitials),
-											child: SchoolDataRow(school: schoolList[index])
-										);
+										return SchoolDataRow(school: schoolsFilteredFor[index]);
 									},
 								),
 							),
